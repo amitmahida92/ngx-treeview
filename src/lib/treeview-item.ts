@@ -7,6 +7,7 @@ export interface TreeviewSelection {
 }
 
 export interface TreeItem {
+    [key: string]: any;
     text: string;
     value: any;
     disabled?: boolean;
@@ -23,16 +24,30 @@ export class TreeviewItem {
     text: string;
     value: any;
 
-    constructor(item: TreeItem, autoCorrectChecked = false) {
+    constructor(item: TreeItem, autoCorrectChecked = false, identifyBy?: string, displayBy?: string) {
         if (isNil(item)) {
             throw new Error('Item must be defined');
         }
-        if (isString(item.text)) {
-            this.text = item.text;
+        if (displayBy) {
+            if (isString(item[displayBy])) {
+                this.text = item[displayBy];
+            } else {
+                throw new Error('A text of item must be string object');
+            }
         } else {
-            throw new Error('A text of item must be string object');
+            if (isString(item.text)) {
+                this.text = item.text;
+            } else {
+                throw new Error('A text of item must be string object');
+            }
         }
-        this.value = item.value;
+
+        if (identifyBy) {
+            this.value = item[identifyBy];
+        } else {
+            this.value = item.value;
+        }
+
         if (isBoolean(item.checked)) {
             this.checked = item.checked;
         }
